@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Creator Commerce Dashboard"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "e81c5040-2ab6-4607-8b30-40f893117df0"
+  }
+}

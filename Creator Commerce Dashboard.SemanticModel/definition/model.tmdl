@@ -1,0 +1,23 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["tiktok_shop_viral_video_sales_attribution_cac"]
+
+annotation PBI_ProTooling = ["MCP-PBIModeling","DevMode"]
+
+ref table tiktok_shop_viral_video_sales_attribution_cac
+ref table DateTableTemplate_9f30ca52-f71e-4c24-93d3-f9c0d4e02694
+ref table LocalDateTable_bc9e7c23-1ebf-480a-8cf7-55db428f74f2
+ref table LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d
+ref table _measures
+
+ref cultureInfo en-US
+

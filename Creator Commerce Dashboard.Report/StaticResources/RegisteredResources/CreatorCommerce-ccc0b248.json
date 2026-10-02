@@ -1,0 +1,30 @@
+{
+  "name": "CreatorCommerce-ccc0b248.json",
+  "dataColors": [
+    "#161823",
+    "#20D5EC",
+    "#FE2C55",
+    "#25F4EE",
+    "#008C87",
+    "#C4C4C4",
+    "#757780",
+    "#5A5C66",
+    "#0B5F66",
+    "#FF8FA6"
+  ],
+  "foreground": "#161823",
+  "foregroundNeutralSecondary": "#757780",
+  "foregroundNeutralTertiary": "#C4C4C4",
+  "background": "#FFFFFF",
+  "backgroundLight": "#F1F1F2",
+  "backgroundNeutral": "#E3E3E6",
+  "tableAccent": "#FE2C55",
+  "good": "#008C87",
+  "neutral": "#C4C4C4",
+  "bad": "#FE2C55",
+  "maximum": "#161823",
+  "center": "#C4C4C4",
+  "minimum": "#25F4EE",
+  "hyperlink": "#007C85",
+  "visitedHyperlink": "#0B5F66"
+}

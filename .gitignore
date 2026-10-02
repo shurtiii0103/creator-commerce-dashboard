@@ -1,0 +1,8 @@
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+
+# Source data is 213 MB (over GitHub's 100 MB file limit) - see README for where to put it
+*.csv
+
+# Legacy single-file exports
+*.pbix

@@ -1,0 +1,474 @@
+table _measures
+	lineageTag: c94fec2d-354b-4050-882e-98254b1302f7
+
+	/// Row count; one row = one video session record.
+	measure 'Video Sessions' = COUNTROWS ( 'tiktok_shop_viral_video_sales_attribution_cac' )
+		formatString: #,0
+		displayFolder: 1. Overview
+		lineageTag: 3a025c9d-c577-4b59-82b5-ad8f15855603
+
+	/// Total campaign spend, USD.
+	measure 'Campaign Spend' = SUM ( 'tiktok_shop_viral_video_sales_attribution_cac'[campaign_spend] )
+		formatString: \$#,0
+		displayFolder: 1. Overview
+		lineageTag: 45f65e9c-5a3b-4f05-8f73-b774d7e86c7a
+
+	/// Total video views.
+	measure 'Video Views' = SUM ( 'tiktok_shop_viral_video_sales_attribution_cac'[video_views] )
+		formatString: #,0
+		displayFolder: 1. Overview
+		lineageTag: e9ea42a4-fc1f-40cb-ad01-fd1534d0f672
+
+	/// Sessions that ended in a purchase (purchase_flag).
+	measure Orders = SUM ( 'tiktok_shop_viral_video_sales_attribution_cac'[purchase_flag] )
+		formatString: #,0
+		displayFolder: 1. Overview
+		lineageTag: 806e4af7-9e4c-40d5-bf41-c3809fa1568c
+
+	/// Orders ÷ video sessions.
+	measure 'Conversion Rate' = DIVIDE ( [Orders], [Video Sessions] )
+		formatString: 0.000%
+		displayFolder: 1. Overview
+		lineageTag: ed1cda82-e1a7-4c84-9a29-e8a5a3e32d6b
+
+	/// Average of the dataset-supplied CAC per row (not Spend ÷ Orders).
+	measure 'Avg CAC (modelled)' = AVERAGE ( 'tiktok_shop_viral_video_sales_attribution_cac'[cac] )
+		formatString: \$#,0
+		displayFolder: 1. Overview
+		lineageTag: 50d5ab42-076d-4a81-976d-06b4e883dc57
+
+	/// Funnel step 2: sessions with a product click.
+	measure 'Product Clicks' = SUM ( 'tiktok_shop_viral_video_sales_attribution_cac'[product_click_flag] )
+		formatString: #,0
+		displayFolder: 1. Overview\Funnel
+		lineageTag: 9f5026fe-0fc7-4c78-8c85-ee90d44d124b
+
+	/// Funnel step 3: sessions with a product page view.
+	measure 'Product Page Views' = SUM ( 'tiktok_shop_viral_video_sales_attribution_cac'[product_page_view_flag] )
+		formatString: #,0
+		displayFolder: 1. Overview\Funnel
+		lineageTag: 90a31cc9-6a18-474a-a8ec-1c16c2caad04
+
+	/// Funnel step 4: sessions with an add to cart.
+	measure 'Add to Cart' = SUM ( 'tiktok_shop_viral_video_sales_attribution_cac'[add_to_cart_flag] )
+		formatString: #,0
+		displayFolder: 1. Overview\Funnel
+		lineageTag: f86bd99d-29e1-4023-8aff-50199435c5ae
+
+	/// Funnel step 5: sessions that started checkout.
+	measure 'Checkout Started' = SUM ( 'tiktok_shop_viral_video_sales_attribution_cac'[checkout_started_flag] )
+		formatString: #,0
+		displayFolder: 1. Overview\Funnel
+		lineageTag: d33404df-126c-4e36-a338-1a9c4483e689
+
+	/// Avg CAC across all traffic sources / regions in the current selection (reference line).
+	measure 'Avg CAC Benchmark' = CALCULATE ( [Avg CAC (modelled)], ALLSELECTED ( 'tiktok_shop_viral_video_sales_attribution_cac'[traffic_source] ), ALLSELECTED ( 'tiktok_shop_viral_video_sales_attribution_cac'[region] ) )
+		formatString: \$#,0
+		displayFolder: 1. Overview\Formatting
+		lineageTag: d28ec7e9-c158-4669-91e5-85fdaca33937
+
+	/// Bar colour: red if >2% above the benchmark, dark if >2% below, grey within ±2%.
+	measure 'CAC vs Avg Colour' = VAR _r = DIVIDE ( [Avg CAC (modelled)], [Avg CAC Benchmark] ) RETURN SWITCH ( TRUE (), _r > 1.02, "#FE2C55", _r < 0.98, "#161823", "#C4C4C4" )
+		isHidden
+		displayFolder: 1. Overview\Formatting
+		lineageTag: 7cc08f1e-b3c0-4a83-aa3f-581b02922e5f
+
+	/// Average hook strength score (0–100).
+	measure 'Avg Hook Strength' = AVERAGE ( 'tiktok_shop_viral_video_sales_attribution_cac'[hook_strength_score] )
+		formatString: 0.0" / 100"
+		displayFolder: 2. Content & Hooks
+		lineageTag: 7e8a7bf6-dbba-4765-aa9b-7fb4965f2b9d
+
+	/// Average 3-second view rate (source column is 0–100).
+	measure '3-Second View Rate' = AVERAGE ( 'tiktok_shop_viral_video_sales_attribution_cac'[three_second_view_rate] ) / 100
+		formatString: 0.0%
+		displayFolder: 2. Content & Hooks
+		lineageTag: dadfd3ba-b72a-4175-88a9-f676a577cd49
+
+	/// Average full-video completion rate (source column is 0–100).
+	measure 'Full Completion Rate' = AVERAGE ( 'tiktok_shop_viral_video_sales_attribution_cac'[full_video_completion_rate] ) / 100
+		formatString: 0.0%
+		displayFolder: 2. Content & Hooks
+		lineageTag: 6ba576bf-b18a-49fa-9623-911e44b975cc
+
+	/// % of sessions flagged viral (any tier above Normal).
+	measure 'Viral Rate' = DIVIDE ( SUM ( 'tiktok_shop_viral_video_sales_attribution_cac'[viral_flag] ), [Video Sessions] )
+		formatString: 0.0%
+		displayFolder: 2. Content & Hooks
+		lineageTag: f051ec83-b568-47b4-a203-6c4c39c1ced5
+
+	/// Row-average of the per-video engagement rate (source column is 0–100).
+	measure 'Engagement Rate' = AVERAGE ( 'tiktok_shop_viral_video_sales_attribution_cac'[engagement_rate] ) / 100
+		formatString: 0.0%
+		displayFolder: 2. Content & Hooks
+		lineageTag: 580f5084-f0e1-4ec9-a68f-87de59cc8c79
+
+	/// Sessions whose viral tier is above Normal.
+	measure 'Viral Videos' = CALCULATE ( [Video Sessions], 'tiktok_shop_viral_video_sales_attribution_cac'[viral_tier] <> "Normal" )
+		formatString: #,0
+		displayFolder: 2. Content & Hooks
+		lineageTag: 83b5bfe3-833a-487f-b4ba-66e2468b1572
+
+	/// Engagement rate across all viral tiers in the current selection (reference line).
+	measure 'Engagement Rate Benchmark' = CALCULATE ( [Engagement Rate], ALLSELECTED ( 'tiktok_shop_viral_video_sales_attribution_cac'[Viral Tier] ) )
+		formatString: 0.0%
+		displayFolder: 2. Content & Hooks\Formatting
+		lineageTag: f3912832-d92f-4372-bb0b-8897fd088ca7
+
+	/// Grey for the Normal tier, dark for viral tiers.
+	measure 'Engagement Tier Colour' = IF ( SELECTEDVALUE ( 'tiktok_shop_viral_video_sales_attribution_cac'[Viral Tier] ) = "Normal", "#C4C4C4", "#161823" )
+		isHidden
+		displayFolder: 2. Content & Hooks\Formatting
+		lineageTag: 7cdab5b3-d87a-4c7c-b2ce-510039d5e9b6
+
+	/// Viral rate across all video formats in the current selection (reference line).
+	measure 'Viral Rate Benchmark' = CALCULATE ( [Viral Rate], ALLSELECTED ( 'tiktok_shop_viral_video_sales_attribution_cac'[video_format] ) )
+		formatString: 0.0%
+		displayFolder: 2. Content & Hooks\Formatting
+		lineageTag: 9325f9c0-ff12-4e49-9b0e-c9e9a4418c4d
+
+	/// Dark if at/above the average viral rate, grey if below.
+	measure 'Viral Rate Colour' = IF ( [Viral Rate] >= [Viral Rate Benchmark], "#161823", "#C4C4C4" )
+		isHidden
+		displayFolder: 2. Content & Hooks\Formatting
+		lineageTag: 8e52d8c1-ed37-40df-bb65-874fd341fe02
+
+	/// Campaign spend per 1,000 video views.
+	measure 'Cost per 1K Views' = DIVIDE ( [Campaign Spend], [Video Views] ) * 1000
+		formatString: \$#,0.00
+		displayFolder: 3. Creators & Cost
+		lineageTag: 0e6751f7-1db4-4fa6-8dc6-3100705d9dc0
+
+	/// % of sessions flagged as returned.
+	measure 'Return Rate' = DIVIDE ( SUM ( 'tiktok_shop_viral_video_sales_attribution_cac'[return_flag] ), [Video Sessions] )
+		formatString: 0.0%
+		displayFolder: 3. Creators & Cost
+		lineageTag: a1327c06-675e-4425-8d30-cfe56a60227f
+
+	/// Average creator commission rate (source column is 0–100).
+	measure 'Avg Creator Commission' = AVERAGE ( 'tiktok_shop_viral_video_sales_attribution_cac'[creator_commission_rate] ) / 100
+		formatString: 0.0%
+		displayFolder: 3. Creators & Cost
+		lineageTag: 70604657-21d5-4ab3-9baf-6ab6f56dce5b
+
+	/// Tier's % of total campaign spend in the current selection.
+	measure 'Share of Spend' = DIVIDE ( [Campaign Spend], CALCULATE ( [Campaign Spend], ALLSELECTED ( 'tiktok_shop_viral_video_sales_attribution_cac'[Creator Tier] ) ) )
+		formatString: 0.0%
+		displayFolder: 3. Creators & Cost
+		lineageTag: c7ff666d-cc1b-4387-8076-f0f0268de809
+
+	/// Tier's % of total video views in the current selection.
+	measure 'Share of Views' = DIVIDE ( [Video Views], CALCULATE ( [Video Views], ALLSELECTED ( 'tiktok_shop_viral_video_sales_attribution_cac'[Creator Tier] ) ) )
+		formatString: 0.0%
+		displayFolder: 3. Creators & Cost
+		lineageTag: 5a299d2b-25c3-4510-8da2-ba0601d4c385
+
+	/// Return rate across all product categories in the current selection (reference line).
+	measure 'Return Rate Benchmark' = CALCULATE ( [Return Rate], ALLSELECTED ( 'tiktok_shop_viral_video_sales_attribution_cac'[product_category] ) )
+		formatString: 0.0%
+		displayFolder: 3. Creators & Cost\Formatting
+		lineageTag: dd94ef0d-aca9-4ff2-b628-1a3df3bf4ec0
+
+	/// Bar colour: red if >2% above the average return rate, dark if >2% below, grey within ±2%.
+	measure 'Return Rate Colour' = VAR _r = DIVIDE ( [Return Rate], [Return Rate Benchmark] ) RETURN SWITCH ( TRUE (), _r > 1.02, "#FE2C55", _r < 0.98, "#161823", "#C4C4C4" )
+		isHidden
+		displayFolder: 3. Creators & Cost\Formatting
+		lineageTag: 02a4784b-0427-417a-a15e-33122f9ee5e0
+
+	/// Months in the current selection, e.g. 'Full year 2025', 'Oct–Dec 2025'.
+	measure 'KPI Period Label' =
+			VAR _first = MIN ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _n = DISTINCTCOUNT ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( _last ), "No data for this selection",
+			        _n = 12, "Full year 2025",
+			        _last - _first + 1 = _n,
+			            IF ( _n = 1,
+			                FORMAT ( DATE ( 2025, _last, 1 ), "mmm" ) & " 2025",
+			                FORMAT ( DATE ( 2025, _first, 1 ), "mmm" ) & "–" & FORMAT ( DATE ( 2025, _last, 1 ), "mmm" ) & " 2025" ),
+			        _n & " months, 2025"
+			    )
+		isHidden
+		displayFolder: 0. KPI Labels
+		lineageTag: 271d8ab4-e534-49a8-8b8e-c78bcdaadbb5
+
+	/// KPI caption: period + which months are compared, e.g. 'Full year 2025 · Dec vs Nov:'.
+	measure 'KPI Context' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			RETURN
+			    [KPI Period Label] & " · "
+			        & IF ( _last = 1, "Jan: no prior month",
+			            FORMAT ( DATE ( 2025, _last, 1 ), "mmm" ) & " vs " & FORMAT ( DATE ( 2025, _last - 1, 1 ), "mmm" ) & ":" )
+		isHidden
+		displayFolder: 0. KPI Labels
+		lineageTag: 1a3c9cd8-debe-49c8-ae93-4eec059ee3d9
+
+	/// Orders card caption with conversion rate prefix.
+	measure 'Orders Context' = "Conv. " & FORMAT ( [Conversion Rate], "0.000%" ) & " · " & [KPI Context]
+		isHidden
+		displayFolder: 0. KPI Labels
+		lineageTag: cb521618-61df-4dd7-b581-29ee1e400ab3
+
+	/// Latest month in selection vs the month before, e.g. '▲ 4.2%'. Blank for January.
+	measure 'Campaign Spend Change Label' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Campaign Spend], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Campaign Spend], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( _last <= 1, BLANK (), IF ( ISBLANK ( _d ), "n/a", IF ( _d >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _d ), "0.0%" ) ) )
+		displayFolder: 1. Overview\KPI Labels
+		lineageTag: ee8f7c89-17ee-4a3e-b76b-1e88ad780c85
+
+	/// Delta colour: spend is neutral, so always grey.
+	measure 'Campaign Spend Change Color' = "#757780"
+		isHidden
+		displayFolder: 1. Overview\Formatting
+		lineageTag: bd4dd4dc-27b4-4a1b-9533-a98dd28b6937
+
+	/// Latest month in selection vs the month before, e.g. '▲ 4.2%'. Blank for January.
+	measure 'Video Views Change Label' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Video Views], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Video Views], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( _last <= 1, BLANK (), IF ( ISBLANK ( _d ), "n/a", IF ( _d >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _d ), "0.0%" ) ) )
+		displayFolder: 1. Overview\KPI Labels
+		lineageTag: 0263bda8-673d-483f-9955-31800708ca61
+
+	/// Delta colour by good direction (up): green = good, red = bad.
+	measure 'Video Views Change Color' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Video Views], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Video Views], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( ISBLANK ( _d ), "#757780", IF ( _d >= 0, "#008C87", "#FE2C55" ) )
+		isHidden
+		displayFolder: 1. Overview\Formatting
+		lineageTag: 14565ac0-3f10-4f04-9daf-f919a8c2ff8d
+
+	/// Latest month in selection vs the month before, e.g. '▲ 4.2%'. Blank for January.
+	measure 'Orders Change Label' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Orders], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Orders], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( _last <= 1, BLANK (), IF ( ISBLANK ( _d ), "n/a", IF ( _d >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _d ), "0.0%" ) ) )
+		displayFolder: 1. Overview\KPI Labels
+		lineageTag: ca5c5578-fdc9-458c-b500-182a8f8b24cc
+
+	/// Delta colour by good direction (up): green = good, red = bad.
+	measure 'Orders Change Color' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Orders], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Orders], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( ISBLANK ( _d ), "#757780", IF ( _d >= 0, "#008C87", "#FE2C55" ) )
+		isHidden
+		displayFolder: 1. Overview\Formatting
+		lineageTag: 8929c366-ea02-440d-b59b-654e83e0f7a4
+
+	/// Latest month in selection vs the month before, e.g. '▲ 4.2%'. Blank for January.
+	measure 'Avg CAC (modelled) Change Label' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Avg CAC (modelled)], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Avg CAC (modelled)], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( _last <= 1, BLANK (), IF ( ISBLANK ( _d ), "n/a", IF ( _d >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _d ), "0.0%" ) ) )
+		displayFolder: 1. Overview\KPI Labels
+		lineageTag: 7ae69135-cf64-4f59-b5b9-daaa0b88ae56
+
+	/// Delta colour by good direction (down): green = good, red = bad.
+	measure 'Avg CAC (modelled) Change Color' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Avg CAC (modelled)], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Avg CAC (modelled)], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( ISBLANK ( _d ), "#757780", IF ( _d >= 0, "#FE2C55", "#008C87" ) )
+		isHidden
+		displayFolder: 1. Overview\Formatting
+		lineageTag: 5742cc1c-9dc2-4b49-a8d5-a4d0a6a678cd
+
+	/// Latest month in selection vs the month before, e.g. '▲ 4.2%'. Blank for January.
+	measure 'Avg Hook Strength Change Label' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Avg Hook Strength], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Avg Hook Strength], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( _last <= 1, BLANK (), IF ( ISBLANK ( _d ), "n/a", IF ( _d >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _d ), "0.0%" ) ) )
+		displayFolder: 2. Content & Hooks\KPI Labels
+		lineageTag: e6d21c2e-cc65-40e9-bf9d-3ee326ad9f81
+
+	/// Delta colour by good direction (up): green = good, red = bad.
+	measure 'Avg Hook Strength Change Color' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Avg Hook Strength], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Avg Hook Strength], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( ISBLANK ( _d ), "#757780", IF ( _d >= 0, "#008C87", "#FE2C55" ) )
+		isHidden
+		displayFolder: 2. Content & Hooks\Formatting
+		lineageTag: 84e45105-6728-4341-bc1e-b778f9c5d318
+
+	/// Latest month in selection vs the month before, e.g. '▲ 4.2%'. Blank for January.
+	measure '3-Second View Rate Change Label' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [3-Second View Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [3-Second View Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( _last <= 1, BLANK (), IF ( ISBLANK ( _d ), "n/a", IF ( _d >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _d ), "0.0%" ) ) )
+		displayFolder: 2. Content & Hooks\KPI Labels
+		lineageTag: d0c784e7-ce8b-4a6e-b3e2-9834b037dc16
+
+	/// Delta colour by good direction (up): green = good, red = bad.
+	measure '3-Second View Rate Change Color' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [3-Second View Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [3-Second View Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( ISBLANK ( _d ), "#757780", IF ( _d >= 0, "#008C87", "#FE2C55" ) )
+		isHidden
+		displayFolder: 2. Content & Hooks\Formatting
+		lineageTag: 1189ec09-49b5-4cb1-b865-bb88ff103c8e
+
+	/// Latest month in selection vs the month before, e.g. '▲ 4.2%'. Blank for January.
+	measure 'Full Completion Rate Change Label' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Full Completion Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Full Completion Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( _last <= 1, BLANK (), IF ( ISBLANK ( _d ), "n/a", IF ( _d >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _d ), "0.0%" ) ) )
+		displayFolder: 2. Content & Hooks\KPI Labels
+		lineageTag: 06169053-4480-47e0-88e6-ae26e21f4db0
+
+	/// Delta colour by good direction (up): green = good, red = bad.
+	measure 'Full Completion Rate Change Color' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Full Completion Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Full Completion Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( ISBLANK ( _d ), "#757780", IF ( _d >= 0, "#008C87", "#FE2C55" ) )
+		isHidden
+		displayFolder: 2. Content & Hooks\Formatting
+		lineageTag: b9be039a-4545-4990-9c92-4dfdec98241b
+
+	/// Latest month in selection vs the month before, e.g. '▲ 4.2%'. Blank for January.
+	measure 'Viral Rate Change Label' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Viral Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Viral Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( _last <= 1, BLANK (), IF ( ISBLANK ( _d ), "n/a", IF ( _d >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _d ), "0.0%" ) ) )
+		displayFolder: 2. Content & Hooks\KPI Labels
+		lineageTag: 625c027d-5c78-477d-b331-8cd1f950529c
+
+	/// Delta colour by good direction (up): green = good, red = bad.
+	measure 'Viral Rate Change Color' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Viral Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Viral Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( ISBLANK ( _d ), "#757780", IF ( _d >= 0, "#008C87", "#FE2C55" ) )
+		isHidden
+		displayFolder: 2. Content & Hooks\Formatting
+		lineageTag: 331dcf55-ca0a-4018-baa7-62a49ac2c812
+
+	/// Latest month in selection vs the month before, e.g. '▲ 4.2%'. Blank for January.
+	measure 'Engagement Rate Change Label' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Engagement Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Engagement Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( _last <= 1, BLANK (), IF ( ISBLANK ( _d ), "n/a", IF ( _d >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _d ), "0.0%" ) ) )
+		displayFolder: 3. Creators & Cost\KPI Labels
+		lineageTag: 1dcaf5b9-c736-4248-a0d7-e3c6c719cbec
+
+	/// Delta colour by good direction (up): green = good, red = bad.
+	measure 'Engagement Rate Change Color' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Engagement Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Engagement Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( ISBLANK ( _d ), "#757780", IF ( _d >= 0, "#008C87", "#FE2C55" ) )
+		isHidden
+		displayFolder: 3. Creators & Cost\Formatting
+		lineageTag: 5bde4622-2ec1-4b49-b65d-4dff07dda84f
+
+	/// Latest month in selection vs the month before, e.g. '▲ 4.2%'. Blank for January.
+	measure 'Cost per 1K Views Change Label' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Cost per 1K Views], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Cost per 1K Views], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( _last <= 1, BLANK (), IF ( ISBLANK ( _d ), "n/a", IF ( _d >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _d ), "0.0%" ) ) )
+		displayFolder: 3. Creators & Cost\KPI Labels
+		lineageTag: ccd2e4b2-3e3f-4ba2-bc98-d202bc7c00c5
+
+	/// Delta colour by good direction (down): green = good, red = bad.
+	measure 'Cost per 1K Views Change Color' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Cost per 1K Views], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Cost per 1K Views], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( ISBLANK ( _d ), "#757780", IF ( _d >= 0, "#FE2C55", "#008C87" ) )
+		isHidden
+		displayFolder: 3. Creators & Cost\Formatting
+		lineageTag: ca693894-319f-4a69-a5fd-d70d2abc7994
+
+	/// Latest month in selection vs the month before, e.g. '▲ 4.2%'. Blank for January.
+	measure 'Return Rate Change Label' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Return Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Return Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( _last <= 1, BLANK (), IF ( ISBLANK ( _d ), "n/a", IF ( _d >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _d ), "0.0%" ) ) )
+		displayFolder: 3. Creators & Cost\KPI Labels
+		lineageTag: 30930de3-b69c-40c0-b5bf-6a9f1edcc94c
+
+	/// Delta colour by good direction (down): green = good, red = bad.
+	measure 'Return Rate Change Color' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Return Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Return Rate], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( ISBLANK ( _d ), "#757780", IF ( _d >= 0, "#FE2C55", "#008C87" ) )
+		isHidden
+		displayFolder: 3. Creators & Cost\Formatting
+		lineageTag: 5fb42ccf-9da9-42e7-bc24-553bc4845c45
+
+	/// Latest month in selection vs the month before, e.g. '▲ 4.2%'. Blank for January.
+	measure 'Avg Creator Commission Change Label' =
+			VAR _last = MAX ( 'tiktok_shop_viral_video_sales_attribution_cac'[month] )
+			VAR _cur = CALCULATE ( [Avg Creator Commission], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last )
+			VAR _prev = CALCULATE ( [Avg Creator Commission], REMOVEFILTERS ( 'LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d' ), 'tiktok_shop_viral_video_sales_attribution_cac'[month] = _last - 1 )
+			VAR _d = DIVIDE ( _cur - _prev, ABS ( _prev ) )
+			RETURN IF ( _last <= 1, BLANK (), IF ( ISBLANK ( _d ), "n/a", IF ( _d >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _d ), "0.0%" ) ) )
+		displayFolder: 3. Creators & Cost\KPI Labels
+		lineageTag: a63f6e2f-dfaf-4c2f-bcca-83e03bfcae13
+
+	/// Delta colour: commission is neutral, so always grey.
+	measure 'Avg Creator Commission Change Color' = "#757780"
+		isHidden
+		displayFolder: 3. Creators & Cost\Formatting
+		lineageTag: aedbd7b2-1e9b-44a1-a801-b9b0ec6d7919
+
+	column Column
+		isHidden
+		formatString: 0
+		lineageTag: 46f4293c-ef05-4f4f-bb84-0c19b2ddd2c6
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _measures = calculated
+		mode: import
+		source = Row("Column", BLANK())
+
+	annotation PBI_Id = abf4d1157ef94be5b5ee09cc97e0da98
+
+	annotation 436ba87b-9c83-4389-a31b-ebd06a36be98 = {"Expression":""}
+

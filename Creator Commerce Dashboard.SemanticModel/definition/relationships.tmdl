@@ -1,0 +1,10 @@
+relationship 879401ac-fde0-405e-9b8a-143f05e7cfde
+	joinOnDateBehavior: datePartOnly
+	fromColumn: tiktok_shop_viral_video_sales_attribution_cac.timestamp
+	toColumn: LocalDateTable_bc9e7c23-1ebf-480a-8cf7-55db428f74f2.Date
+
+relationship a91516d7-d7e2-4817-9c37-6f10de269c24
+	joinOnDateBehavior: datePartOnly
+	fromColumn: tiktok_shop_viral_video_sales_attribution_cac.date
+	toColumn: LocalDateTable_60f65ef6-83ce-48c1-bc68-761d858ba15d.Date
+
