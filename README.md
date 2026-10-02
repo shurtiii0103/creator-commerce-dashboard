@@ -1,104 +1,119 @@
-# Creator Commerce · Viral Video Sales Attribution & CAC
+# Creator Commerce Dashboard · Built with Agentic AI Development
 
-A Power BI dashboard analysing **100,000 TikTok Shop video sessions (Jan–Dec 2025)**. It tracks campaign spend, reach, what makes a video hold attention and go viral, and how creator tiers compare on cost and returns.
+A four-page **Power BI** dashboard on TikTok Shop creator commerce (viral video sales attribution and CAC), taken from a raw 402-column CSV to a documented, version-controlled project using **Claude as an AI development agent**. I set the direction, constraints and reviews. Claude profiled the data, prototyped, built, debugged and documented it using real tools (HTML, Power BI Modeling MCP, PBIR report authoring CLI).
 
-Built as a **PBIP project** (PBIR report + TMDL model), so every page, visual and DAX measure is plain text and diff-able in git.
+![Development cycle](images/development-cycle.png)
 
-> All data is synthetic. No real creators, customers or brands.
+---
 
-![Overview page](docs/screenshots/overview.png)
+## 📊 The dashboard
 
-## Report pages
-
-| Page | Question it answers | Visuals |
-|---|---|---|
-| **Overview** | Where is the money going, and how far does it reach? | 4 KPI cards (Campaign Spend, Video Views, Orders, Avg CAC) · Spend & video sessions by month (drill to quarter) · Video views by market region · Spend by campaign type · Avg CAC by traffic source vs average |
-| **Content & Hooks** | What makes a video hold attention and go viral? | 4 KPI cards (Hook Strength, 3-Second View Rate, Completion Rate, Viral Rate) · Retention by hook-strength band · Engagement rate by viral tier · Viral rate by video format · Viral videos by month and tier |
-| **Creators & Cost** | Which creator tiers are worth the money? | 4 KPI cards (Engagement Rate, Cost per 1K Views, Return Rate, Creator Commission) · Engagement & viral rate by creator tier · Share of spend vs share of views by tier · Avg CAC by market region · Return rate by product category |
-| **Notes** | How is everything calculated? | Measure definitions, how to read the KPI colours, data definitions and caveats |
-
-All pages share one header and navigation bar, plus a sidebar of synced slicers (**Year, Quarter, Month, Market Region, Creator Tier, Campaign Type**) with a **Reset filters** button. Every chart cross-filters the rest of its page.
-
-## Key findings
-
-- **Reach is concentrated in big creators:** Mega creators get ~5% of spend but deliver ~62% of video views. Nano creators get ~25% of spend for ~0.1% of views.
-- **Small creators engage best:** Nano creators reach ~23.5% engagement and ~19.6% viral rate, against ~3.8% / ~3.7% for Mega creators.
-- **Hooks matter:** going from the weakest hooks (0–20) to the strongest (80–100), 3-second view rate rises from ~50% to ~91% and full completion from ~15% to ~28%. Viral rate stays flat at ~12.5–13%, so a strong hook keeps viewers watching but doesn't make a video go viral.
-- **Spend ramps into Q4:** monthly sessions grow from ~5.7K in January to ~17K in December, and December spend is up 17% on November.
-- **Almost no sales:** only 2 purchases in 100,000 sessions (0.002% conversion). CAC is therefore shown as the dataset's **modelled** CAC (avg ~$27.9K), not Spend ÷ Orders.
-
-## How the KPI cards work
-
-Each card shows the value for the current selection, then compares the latest month in the selection with the month before, e.g. `Full year 2025 · Dec vs Nov: ▲ 21.0%`. The delta is coloured by **good direction**:
-
-| Colour | Meaning |
+<!-- PLACEHOLDER: upload Power BI screenshots to /images with these exact names -->
+| Overview | Content & Hooks |
 |---|---|
-| 🟩 Teal `#008C87` | Moved the right way (views up, CAC down …) |
-| 🟥 Red `#FE2C55` | Moved the wrong way |
-| ⬜ Grey `#757780` | Neutral KPI (spend, commission) |
+| ![Overview](images/dashboard-overview.png) | ![Content & Hooks](images/dashboard-content-hooks.png) |
 
-Bar charts use the same idea against a dashed benchmark line: **red** is more than 2% worse than average, **grey** is within ±2%, and **dark** is better than average.
+| Creators & Cost | Notes |
+|---|---|
+| ![Creators & Cost](images/dashboard-creators-cost.png) | ![Notes](images/dashboard-notes.png) |
 
-## Data model
+**Page 1: Overview.** KPIs: Campaign Spend · Video Views · Orders · Avg CAC (modelled), each compared with the previous month.
+Visuals: campaign spend and video sessions by month (quarter → month drill) · video views by market region · spend by campaign type · avg CAC by traffic source vs average.
 
-- **One flat table:** `tiktok_shop_viral_video_sales_attribution_cac`, at one row per video session with 402 columns. There's no star schema and no custom date table; it relies on Power BI's auto date/time hierarchy on `date`.
-- **`_measures` table:** holds all 56 DAX measures, organised into display folders per page (base KPIs, `KPI Labels`, `Formatting`).
-- **6 calculated columns:** hook-strength bands, plus sort-order copies for Creator Tier and Viral Tier (avoiding a sort-by circular dependency).
-- **Colour measures:** these return hex codes that drive conditional formatting, so the colour rules live in the model rather than in each visual.
+**Page 2: Content & Hooks.** KPIs: Avg Hook Strength · 3-Second View Rate · Full Completion Rate · Viral Rate.
+Visuals: retention by hook-strength band · engagement rate by viral tier · viral rate by video format · viral videos by month and tier.
 
-See **[measures.md](measures.md)** for every measure with its DAX, and **[data-dictionary.md](data-dictionary.md)** for the columns used.
+**Page 3: Creators & Cost.** KPIs: Avg Engagement Rate · Cost per 1K Views · Return Rate · Avg Creator Commission.
+Visuals: engagement and viral rate by creator tier · share of spend vs share of views by tier · avg CAC by market region · return rate by product category.
 
-## Design
+**Page 4: Notes.** Measure definitions, how to read the KPI colours, data definitions and caveats.
 
-- **Theme:** a custom TikTok-inspired theme (`CreatorCommerce`) applied report-wide, so no default Power BI blue appears.
+**Filters (synced across pages):** Year · Quarter · Month · Market Region · Creator Tier · Campaign Type · Reset.
 
-  | Role | Colour |
-  |---|---|
-  | Ink / primary series | `#161823` |
-  | Accent (lines, benchmarks) | `#20D5EC` |
-  | Highlight / bad | `#FE2C55` |
-  | Aqua | `#25F4EE` |
-  | Good | `#008C87` |
-  | Neutral | `#C4C4C4` |
-  | Page | `#F1F1F2` |
+### 💡 What the data says
+- **Big creators buy reach, small creators buy engagement.** Mega creators take ~5% of spend but deliver ~62% of views. Nano creators take ~25% of spend for ~0.1% of views, yet engage best (~23.5% engagement and ~19.6% viral rate, vs ~3.8% / ~3.7% for Mega).
+- **Hooks keep people watching, but don't make videos go viral.** From the weakest hooks (0–20) to the strongest (80–100), the 3-second view rate rises from ~50% to ~91% and full completion from ~15% to ~28%. Viral rate stays flat at ~12.5–13%.
+- **Spend ramps into Q4.** Sessions grow from ~5.7K in January to ~17K in December.
+- **Almost no sales.** There are only 2 purchases in 100,000 sessions, so CAC uses the dataset's *modelled* CAC column instead of Spend ÷ Orders.
 
-- **Font:** Segoe UI.
-- **Canvas:** 1920 × 1080, fit to page.
-- **Wireframe:** the report was built 1:1 from an interactive HTML mockup, [`creator_commerce_wireframe.html`](creator_commerce_wireframe.html). Open it in a browser to click through the intended layout.
+---
 
-## Repository structure
+## 🤖 How I built it: agentic development with Claude
 
-```text
-.
-├── Creator Commerce Dashboard.pbip              # open this in Power BI Desktop
-├── Creator Commerce Dashboard.Report/           # PBIR report: pages, visuals, theme
-│   ├── definition/pages/<page>/visuals/<visual>/visual.json
-│   └── StaticResources/RegisteredResources/CreatorCommerce-*.json   # theme
-├── Creator Commerce Dashboard.SemanticModel/    # TMDL model
-│   └── definition/tables/_measures.tmdl         # all DAX measures
-├── creator_commerce_wireframe.html              # interactive HTML mockup
-├── measures.md                                  # DAX measure catalogue
-├── data-dictionary.md                           # column definitions
-└── README.md
-```
+I treated Claude as a developer on my team. I wrote the brief, set the constraints and approved each stage. Claude did the hands-on work using tools connected to my environment.
 
-## Getting the data
+### 1 · Data
+The source is a synthetic TikTok Shop dataset: **100,000 rows × 402 columns**, one row per video session (Jan–Dec 2025), covering creators, products, campaigns, video performance, hooks, retention, the path to purchase, attribution, CAC and costs. Claude profiled it to agree the grain and pick the ~25 columns that matter. It also flagged the caveats up front: duplicate columns, near-uniform synthetic splits, and only **2 purchases** in the whole file.
 
-The source CSV (`tiktok_shop_viral_video_sales_attribution_cac.csv`, **213 MB**) is too large for GitHub (100 MB file limit), so it is **not in the repo** and `.gitignore` excludes `*.csv`.
+### 2 · Prototype: interactive HTML wireframe
+Claude built a **clickable HTML prototype** on the real data: working slicers, cross-filtering charts, tooltips, a month/quarter toggle and page navigation. It used Power BI's 1920×1080 canvas, TikTok brand colours, and only visuals that exist natively in Power BI, so it could be rebuilt 1:1. The prototype also documented every planned DAX measure on a Notes page.
 
-1. Download the dataset and save it in the repo root as `tiktok_shop_viral_video_sales_attribution_cac.csv`.
-2. Open `Creator Commerce Dashboard.pbip` in Power BI Desktop.
-3. The query points to the original author's local path. Update it under **Transform data → select the table → Source step**, choosing your copy of the CSV.
-4. Click **Refresh**.
+<!-- PLACEHOLDER: HTML wireframe screenshots -->
+| Prototype · Overview | Prototype · Content & Hooks |
+|---|---|
+| ![HTML wireframe page 1](images/wireframe-html-page1.png) | ![HTML wireframe page 2](images/wireframe-html-page2.png) |
 
-## Requirements
+▶️ Try it: download [`creator_commerce_wireframe.html`](creator_commerce_wireframe.html) and open it in any browser.
 
-- **Power BI Desktop:** a recent build. The PBIP/PBIR format must be enabled under *File → Options → Preview features → Power BI Project (.pbip) save option* and *Store reports using enhanced metadata format (PBIR)*.
-- **Disk space:** about 300 MB free for the data and model cache.
+### 3 · Build: Power BI (PBIP)
+My constraints: *flat table only, all measures in a `_measures` table, no model changes without asking, and it must look identical to the wireframe.* Claude used the **Power BI Modeling MCP** (connected live to Power BI Desktop) and the **PBIR report-authoring CLI** to produce:
+- **The model:** a single import table plus a `_measures` table.
+- **Asked first, then built:** before touching the model, Claude stopped and asked about the gaps the wireframe exposed. Hook-strength bands and a logical sort order for creator/viral tiers both need calculated columns. I approved **6 calculated columns**, using display copies for the sort so the HR project's circular-dependency bug couldn't recur ([data-dictionary.md](data-dictionary.md)).
+- **56 DAX measures** in display folders: base KPIs, month-over-month KPI captions and ▲/▼ labels, benchmarks, and hex-colour measures for conditional formatting ([measures.md](measures.md)).
+- **Numbers checked live:** every measure was tested with DAX queries against the open Desktop model before any visual was built.
+- **4 pages, written as PBIR files by a generator script** that encodes the wireframe's positions, colours and fonts. They are validated with **0 errors**, and every field reference is checked against the model.
 
-## Tools used
+### 4 · Review and iterate
+I reviewed the build in Power BI Desktop and sent screenshots. Claude applied the changes:
+- **"Keep the colours consistent, no blue, use TikTok colours."** Claude added a custom `CreatorCommerce` theme (ink `#161823`, cyan `#20D5EC`, red `#FE2C55`, aqua `#25F4EE`, teal `#008C87`), so no default Power BI blue appears anywhere.
+- **"The funnel chart doesn't make sense."** With only 2 purchases, a path-to-purchase funnel was mostly empty bars. It was replaced with **Video Views by Market Region**, which fits the Overview's spend-and-reach story.
+- **"Make the Notes page prettier."** It was redesigned as styled cards: one measure card per page, a colour legend for the KPI deltas, and Definitions and Data caveats panels.
 
-- **Power BI Desktop:** PBIP, PBIR and TMDL.
-- **DAX:** all measures, including month-over-month logic, benchmarks and colour rules.
-- **HTML / JS mockup:** used to design and agree the layout before building.
-- **Power BI Modeling MCP and the `powerbi-report-author` CLI:** used for measure authoring, PBIR generation and validation.
+### 5 · Debug
+- **Funnel visual needs a category.** Power BI's funnel visual can't take separate measures with no category field. This was found through CLI metadata before rendering, and it fed into dropping the funnel.
+- **Single year, no previous-year comparison.** The data only covers 2025, so the KPI cards compare the latest month in the selection with the month before. `REMOVEFILTERS` on the auto date table keeps the comparison working even when the Month slicer excludes the prior month.
+- **Validator catches.** Invalid legend enum values and a theme-name mismatch were caught by `powerbi-report-author validate` and fixed before Desktop ever saw them.
+
+### 6 · Document
+Claude wrote this documentation and generated the measure catalogue directly from the model's TMDL. It also set up `.gitignore` so the 213 MB source CSV stays out of GitHub.
+
+---
+
+## 💡 What this demonstrates
+
+- **Agentic AI workflow:** an AI agent working through real tools (MCP servers, CLIs, file system, a live Power BI Desktop session), not just chat answers.
+- **Human-in-the-loop control:** my brief, constraints and approval at every stage. Model changes were proposed and approved, never assumed.
+- **Design-first BI:** profile → prototype → build → review, so feedback lands before development cost.
+- **Power BI as code:** PBIP / TMDL / PBIR files, generated by script and reviewable in Git.
+- **DAX:** month-over-month KPI labels and good-direction colours, `ALLSELECTED` benchmarks, colour-returning measures, share-of-total.
+- **Honest analytics:** surfacing that the data has almost no sales, and designing around it instead of hiding it.
+
+---
+
+## 📁 Repository
+
+| File / folder | What it is |
+|---|---|
+| `Creator Commerce Dashboard.pbip` | Open this in Power BI Desktop |
+| `Creator Commerce Dashboard.Report/` | Report definition (PBIR: pages, visuals, custom theme) |
+| `Creator Commerce Dashboard.SemanticModel/` | Model definition (TMDL: table, calculated columns, measures) |
+| `creator_commerce_wireframe.html` | Interactive prototype |
+| [`measures.md`](measures.md) | DAX measure catalogue |
+| [`data-dictionary.md`](data-dictionary.md) | Columns used, calculated columns, data quirks |
+| `images/` | Screenshots and diagrams |
+
+> The source CSV (`tiktok_shop_viral_video_sales_attribution_cac.csv`, 213 MB) is **not in the repo**. It's over GitHub's 100 MB file limit.
+
+## ▶️ How to open it
+
+1. Install **Power BI Desktop** and enable the PBIP / TMDL / PBIR preview features (*Options → Preview features*).
+2. Clone or download this repo, then put `tiktok_shop_viral_video_sales_attribution_cac.csv` in the repo folder.
+3. Open `Creator Commerce Dashboard.pbip`.
+4. Go to **Transform data**, select the table, and update the file path in the **Source** step to where the CSV is saved on your machine.
+5. **Refresh.**
+
+## 🛠 Tools
+
+Power BI Desktop (PBIP · TMDL · PBIR) · DAX · Power Query · HTML/CSS/JS · Node.js · **Claude** (Power BI Modeling MCP, `powerbi-report-author` CLI) · Git/GitHub
+
+> All data is synthetic. No real creators, customers or brands. Built as a self-learning portfolio project.
